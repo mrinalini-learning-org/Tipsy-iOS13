@@ -17,15 +17,19 @@ class CalculatorViewController: UIViewController {
     @IBOutlet weak var billTextField: UITextField!
     var pctButton: UIButton?
     var splitBetween: Int?
+    var gotToResults: String?
+    var finalSplitCalculator = FinalSplitCalculator()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        gotToResults = "gotToResults"
         pctButton = zeroPctButton
         splitBetween = 2
     }
     
     
     @IBAction func tipChanged(_ sender: UIButton) {
+        billTextField.endEditing(true)
         let currentTitle = sender.currentTitle!
         
         switch currentTitle {
@@ -47,15 +51,28 @@ class CalculatorViewController: UIViewController {
         }
     }
 
-    
-    @IBAction func calculateTip(_ sender: UIButton) {
-        let tipPctAsString = pctButton?.currentTitle ?? "0%"
-        let tipPctAsFloat = (Float(tipPctAsString.prefix(tipPctAsString.count - 1)) ?? 0) / 100
-        print("tipPctAsFloat: \(tipPctAsFloat). splitBetween: \(splitBetween!) billAmount \(billTextField.text!).")
-    }
     @IBAction func stepperValueChanged(_ sender: UIStepper) {
         splitBetween = Int(sender.value)
         splitNumberLabel.text = String(splitBetween!)
+    }
+    
+    @IBAction func calculateTip(_ sender: UIButton) {
+        billTextField.endEditing(true)
+        
+        let tipPctAsString = pctButton?.currentTitle ?? "0%"
+        let billAmount = Float(billTextField.text ?? "0") ?? 0
+        finalSplitCalculator.calculateFinalSplit(tipPctAsString, billAmount , splitBetween!)
+        self.performSegue(withIdentifier: gotToResults!, sender: self)
+        
+    }
+    
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        // Get the new view controller using segue.destination.
+        if segue.identifier == gotToResults! {
+            let destinationViewController = segue.destination as! ResultsViewController
+            destinationViewController.finalSplit = finalSplitCalculator.finalSplit
+        }
         
     }
    

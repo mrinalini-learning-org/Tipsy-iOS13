@@ -9,22 +9,24 @@
 import UIKit
 
 class ResultsViewController: UIViewController {
+    
+    var finalSplit: FinalSplit?
 
+    @IBOutlet weak var totalPerPerson: UILabel!
+    @IBOutlet weak var splitDescription: UILabel!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+        if (finalSplit != nil) {
+            totalPerPerson.text = String(format: "%.2f", finalSplit?.totalPerPerson ?? 0)
+            
+            let splitBetween: String = String(finalSplit!.splitBetween)
+            let tipPercentage: String = finalSplit!.tipPercentage
+            splitDescription.text = "Split between \(splitBetween), with \(tipPercentage) tip."
+        }
     }
-    
 
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    @IBAction func recalculateClicked(_ sender: UIButton) {
+        self.dismiss(animated: true)
     }
-    */
-
 }
